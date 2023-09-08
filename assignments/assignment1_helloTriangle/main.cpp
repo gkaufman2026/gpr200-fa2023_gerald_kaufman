@@ -30,6 +30,28 @@ const char* fragmentShaderSource = R"(
 	}
 )";
 
+//Creates a new vertex array object with vertex data
+unsigned int createVAO(float* vertexData, int numVertices) {
+	unsigned int vao, vbo;
+
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	//Allocate space for + send vertex data to GPU.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	//Tell vao to pull vertex data from vbo
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+	//Define position attribute (3 floats)
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (const void*)0);
+	glEnableVertexAttribArray(0);
+
+	printf("VAO was created\n");
+	return vao;
+}
+
 // Creates a new shader of a given type.
 // Possible types: GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, etc
 // Returns id of the shader object
@@ -37,26 +59,8 @@ unsigned int createShader(GLenum shaderType, const char* sourceCode) {
 	unsigned int shader = glCreateShader(shaderType);
 	glShaderSource(shader, 1, &sourceCode, NULL);
 	glCompileShader(shader);
+	printf("Shader was created\n");
 	return shader;
-}
-
-
-//Creates a new vertex array object with vertex data
-unsigned int createVAO(float* vertexData, int numVertices) {
-	unsigned int vao, vbo;
-
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(float), vertexData, GL_STATIC_DRAW);
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (const void*)0);
-	glEnableVertexAttribArray(0);
-
-	return vao;
 }
 
 //Creates a new shader program with vertex + fragment stages
@@ -76,7 +80,10 @@ unsigned int createShaderProgram(const char* vertexShaderSource, const char* fra
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		printf("Failed to compile shader: %s", infoLog);
-		return 0;
+		return 4;
+	}
+	else {
+		printf("Shader Program was created\n");
 	}
 
 	glAttachShader(shaderProgram, vertexShader);
@@ -86,7 +93,7 @@ unsigned int createShaderProgram(const char* vertexShaderSource, const char* fra
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		return 0;
+		return 5;
 	}
 
 	glDeleteShader(vertexShader);
@@ -95,28 +102,30 @@ unsigned int createShaderProgram(const char* vertexShaderSource, const char* fra
 	return shaderProgram;
 }
 int main() {
-	unsigned int shader = createShaderProgram(vertexShaderSource, fragmentShaderSource);
-	unsigned int vao = createVAO(vertices, 3);
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello Triangle", NULL, NULL);
-
-	glfwMakeContextCurrent(window);
-
-	printf("Initializing...");
+	printf("Initializing...\n");
 	if (!glfwInit()) {
 		printf("GLFW failed to init!");
 		return 1;
 	}
 
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello Triangle", NULL, NULL);
+
+	glfwMakeContextCurrent(window);
+
 	if (window == NULL) {
 		printf("GLFW failed to create window");
-		return 1;
+		return 2;
 	}
 
 	if (!gladLoadGL(glfwGetProcAddress)) {
 		printf("GLAD Failed to load GL headers");
-		return 1;
+		return 3;
 	}
 
+	unsigned int shader = createShaderProgram(vertexShaderSource, fragmentShaderSource);
+	unsigned int vao = createVAO(vertices, 3);
+
+	printf("\n\nCreating Triangle");
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
