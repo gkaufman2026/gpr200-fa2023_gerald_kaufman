@@ -8,10 +8,10 @@
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 float vertices[21] = {
-	//x   //y  //z   //r  //g  //b  //a
-	-0.5, -0.5, 0.0, 1.0, 0.0, 0.0, 1.0, //Bottom left
-	 0.5, -0.5, 0.0, 0.0, 1.0, 0.0, 1.0, //Bottom right
-	 0.0,  0.5, 0.0, 0.0, 0.0, 1.0, 1.0  //Top center
+    //x   //y  //z   //r  //g  //b  //a
+    -0.5, -0.5, 0.0, 1.0, 0.0, 0.0, 1.0, //Bottom left
+    0.5, -0.5, 0.0, 0.0, 1.0, 0.0, 1.0, //Bottom right
+    0.0, 0.5, 0.0, 0.0, 0.0, 1.0, 1.0  //Top center
 };
 
 const char* vertexShaderSource = R"(
@@ -39,121 +39,119 @@ const char* fragmentShaderSource = R"(
 
 //Creates a new vertex array object with vertex data
 unsigned int createVAO(float* vertexData, int numVertices) {
-	unsigned int vao, vbo;
+    unsigned int vao, vbo;
 
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	//Allocate space for + send vertex data to GPU.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    //Allocate space for + send vertex data to GPU.
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	//Tell vao to pull vertex data from vbo
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    //Tell vao to pull vertex data from vbo
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-	//Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (const void*)0);
-	glEnableVertexAttribArray(0);
+    //Position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (const void*)0);
+    glEnableVertexAttribArray(0);
 
-	//Color attribute
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (const void*)(sizeof(float) * 3));
-	glEnableVertexAttribArray(1);
-	printf("VAO was created\n");
-	return vao;
+    //Color attribute
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (const void*)(sizeof(float) * 3));
+    glEnableVertexAttribArray(1);
+    printf("VAO was created\n");
+    return vao;
 }
 
 // Creates a new shader of a given type.
 // Possible types: GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, etc
 // Returns id of the shader object
 unsigned int createShader(GLenum shaderType, const char* sourceCode) {
-	unsigned int shader = glCreateShader(shaderType);
-	glShaderSource(shader, 1, &sourceCode, NULL);
-	glCompileShader(shader);
-	printf("Shader was created\n");
-	return shader;
+    unsigned int shader = glCreateShader(shaderType);
+    glShaderSource(shader, 1, &sourceCode, NULL);
+    glCompileShader(shader);
+    printf("Shader was created\n");
+
+    return shader;
 }
 
 //Creates a new shader program with vertex + fragment stages
 //Returns id of new shader program if successful, 0 if failed
 unsigned int createShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource) {
-	unsigned int vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSource);
-	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+    unsigned int vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSource);
+    unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
 
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
 
-	unsigned int shaderProgram = glCreateProgram();
-	int success;
-	char infoLog[512];
+    unsigned int shaderProgram = glCreateProgram();
+    int success;
+    char infoLog[512];
 
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		printf("Failed to compile shader: %s", infoLog);
-		return 4;
-	}
-	else {
-		printf("Shader Program was created\n");
-	}
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        printf("Failed to compile shader: %s", infoLog);
+        return 4;
+    } else {
+        printf("Shader Program was created\n");
+    }
 
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
 
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		return 5;
-	}
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        return 5;
+    }
 
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
 
-	return shaderProgram;
+    return shaderProgram;
 }
+
 int main() {
-	printf("Initializing...\n");
-	if (!glfwInit()) {
-		printf("GLFW failed to init!");
-		return 1;
-	}
+    printf("Initializing...\n");
+    if (!glfwInit()) {
+        printf("GLFW failed to init!");
+        return 1;
+    }
 
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello Triangle", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello Triangle", NULL, NULL);
 
-	glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window);
 
-	if (window == NULL) {
-		printf("GLFW failed to create window");
-		return 2;
-	}
+    if (window == NULL) {
+        printf("GLFW failed to create window");
+        return 2;
+    }
 
-	if (!gladLoadGL(glfwGetProcAddress)) {
-		printf("GLAD Failed to load GL headers");
-		return 3;
-	}
+    if (!gladLoadGL(glfwGetProcAddress)) {
+        printf("GLAD Failed to load GL headers");
+        return 3;
+    }
 
-	unsigned int shader = createShaderProgram(vertexShaderSource, fragmentShaderSource);
-	unsigned int vao = createVAO(vertices, 3);
+    unsigned int shader = createShaderProgram(vertexShaderSource, fragmentShaderSource);
+    unsigned int vao = createVAO(vertices, 3);
 
-	printf("\n\nCreating Triangle");
-	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
-		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glUseProgram(shader);
-		glBindVertexArray(vao);
-		//In render loop...
-		//The current time in seconds this frame
-		float time = (float)glfwGetTime();
-		//Get the location of the uniform by name
-		int timeLocation = glGetUniformLocation(shader, "_Time");
-		//Set the value of the variable at the location
-		glUniform1f(timeLocation, time);
+    printf("\nCreating Triangle: ");
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+        glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glUseProgram(shader);
+        glBindVertexArray(vao);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+        float time = (float)glfwGetTime();
+        int timeLocation = glGetUniformLocation(shader, "_Time");
+        glUniform1f(timeLocation, time);
 
-		glfwSwapBuffers(window);
-	}
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
-	printf("Shutting down...");
+        glfwSwapBuffers(window);
+    }
+
+    printf("Shutting down...");
 }
