@@ -7,17 +7,20 @@
 
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
-float vertices[9] = {
-	// X   // Y  // Z
-	-0.5, -0.5, 0.0, // Bottom left
-	 0.5, -0.5, 0.0, // Bottom right
-	 0.0,  0.5, 0.0  // Top center
+float vertices[21] = {
+	//x   //y  //z   //r  //g  //b  //a
+	-0.5, -0.5, 0.0, 1.0, 0.0, 0.0, 1.0, //Bottom left
+	 0.5, -0.5, 0.0, 0.0, 1.0, 0.0, 1.0, //Bottom right
+	 0.0,  0.5, 0.0, 0.0, 0.0, 1.0, 1.0  //Top center
 };
 
 const char* vertexShaderSource = R"(
 	#version 450
 	layout(location = 0) in vec3 vPos;
-	void main() {
+	layout(location = 1) in vec4 vColor;
+	out vec4 Color;
+	void main(){
+		Color = vColor;
 		gl_Position = vec4(vPos,1.0);
 	}
 )";
@@ -25,8 +28,9 @@ const char* vertexShaderSource = R"(
 const char* fragmentShaderSource = R"(
 	#version 450
 	out vec4 FragColor;
-	void main() {
-		FragColor = vec4(1.0);
+	in vec4 Color;
+	void main(){
+		FragColor = Color;
 	}
 )";
 
@@ -44,10 +48,13 @@ unsigned int createVAO(float* vertexData, int numVertices) {
 	//Tell vao to pull vertex data from vbo
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-	//Define position attribute (3 floats)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (const void*)0);
+	//Position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (const void*)0);
 	glEnableVertexAttribArray(0);
 
+	//Color attribute
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (const void*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(1);
 	printf("VAO was created\n");
 	return vao;
 }
