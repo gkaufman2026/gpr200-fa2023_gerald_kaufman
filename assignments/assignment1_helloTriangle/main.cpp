@@ -29,8 +29,9 @@ const char* fragmentShaderSource = R"(
 	#version 450
 	out vec4 FragColor;
 	in vec4 Color;
+	layout(location = 6) uniform float _Time;
 	void main(){
-		FragColor = Color;
+		FragColor = Color * abs(sin(_Time));
 	}
 )";
 
@@ -139,6 +140,14 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUseProgram(shader);
 		glBindVertexArray(vao);
+		//In render loop...
+		//The current time in seconds this frame
+		float time = (float)glfwGetTime();
+		//Get the location of the uniform by name
+		int timeLocation = glGetUniformLocation(shader, "_Time");
+		//Set the value of the variable at the location
+		glUniform1f(timeLocation, time);
+
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
