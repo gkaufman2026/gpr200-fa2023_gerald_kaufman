@@ -69,7 +69,7 @@ namespace shaderLib {
 	}
 
 	// CREATED FUNCTION IN HOPES TO GET RID OF C2065 ERROR
-	unsigned int getID() {
+	unsigned int ShaderLibrary::getID() {
 		return id;
 	}
 
@@ -81,15 +81,15 @@ namespace shaderLib {
 		glUniform1f(glGetUniformLocation(getID(), name.c_str()), v);
 	}
 
-	void setVec2(const string& name, float x, float y) {
+	void ShaderLibrary::setVec2(const string& name, float x, float y) {
 		glUniform2f(glGetUniformLocation(getID(), name.c_str()), x, y);
 	}
 
-	void setVec3(const string& name, float x, float y, float z) {
+	void ShaderLibrary::setVec3(const string& name, float x, float y, float z) {
 		glUniform3f(glGetUniformLocation(getID(), name.c_str()), x, y, z);
 	}
 
-	void setVec4(const string& name, float x, float y, float z, float w) {
+	void ShaderLibrary::setVec4(const string& name, float x, float y, float z, float w) {
 		glUniform4f(glGetUniformLocation(getID(), name.c_str()), x, y, z, w);
 	}
 }
