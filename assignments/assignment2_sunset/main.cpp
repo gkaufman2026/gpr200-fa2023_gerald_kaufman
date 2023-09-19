@@ -19,17 +19,18 @@ struct Vertex {
 };
 
 Vertex vertices[4] = {
-	// x    y    z    u    v
-	{ -1.0 , -1.0 , 0.0 , 0.0 , 0.0 }, // Bottom left
-	{  1.0 , -1.0 , 0.0 , 1.0 , 0.0 }, // Bottom right
-	{  1.0 ,  1.0 , 0.0 , 1.0 , 1.0 }, // Top right
-	{ -1.0 ,  1.0 , 0.0 , 0.0 , 1.0 }  // Top left
+//    x      y      z      u      v
+   { 0.0f , 0.0f , 0.0f , 0.0f , 0.0f }, // Bottom left
+   { 1.0f , 0.0f , 0.0f , 1.0f , 0.0f }, // Bottom right
+   { 1.0f , 1.0f , 0.0f , 1.0f , 1.0f }, // Top right
+   { 0.0f , 1.0f , 0.0f , 0.0f , 1.0f }  // Top left
 };
 
-unsigned int indices[6] = {
-	0, 1, 2, // Triangle 1
-	0, 2, 3  // Triangle 2
+unsigned int indices[6]{
+	0, 1, 2, // TRIANGLE 1
+	0, 2, 3 // TRIANGLE 2
 };
+
 
 float triangleColor[3] = { 1.0f, 0.5f, 0.0f };
 float triangleBrightness = 1.0f;
@@ -67,7 +68,7 @@ int main() {
 	shaderLib::ShaderLibrary shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
 	shader.use();
 
-	unsigned int vao = createVAO(vertices, 4, indices, 2);
+	unsigned int vao = createVAO(vertices, 4, indices, 6);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
