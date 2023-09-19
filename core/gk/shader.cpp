@@ -1,6 +1,6 @@
 #include "../ew/external/glad.h"
-#include "shader.h"
 #include <iostream>
+#include "shader.h"
 
 using namespace std;
 
@@ -57,34 +57,39 @@ namespace shaderLib {
 		return shaderProgram;
 	}
 
-	//// SHADER CLASS
-	//ShaderLibrary::ShaderLibrary(const string& vertexShader, const string& fragmentShader) {
-	//	string vertexShaderSource = loadShaderSourceFromFile(vertexShader.c_str());
-	//	string fragmentShaderSource = loadShaderSourceFromFile(fragmentShader.c_str());
-	//	m_id = createShaderProgram(vertexShaderSource.c_str(), fragmentShaderSource.c_str());
-	//}
+	// SHADER CLASS
+	ShaderLibrary::ShaderLibrary(const string& vertexShader, const string& fragmentShader) {
+		string vertexShaderSource = loadShaderSourceFromFile(vertexShader.c_str());
+		string fragmentShaderSource = loadShaderSourceFromFile(fragmentShader.c_str());
+		id = createShaderProgram(vertexShaderSource.c_str(), fragmentShaderSource.c_str());
+	}
 
-	//void ShaderLibrary::use() {
-	//	glUseProgram(m_id);
-	//}
+	void ShaderLibrary::use() {
+		glUseProgram(id);
+	}
 
-	//void ShaderLibrary::setInt(const string& name, int v) const {
-	//	glUniform1i(glGetUniformLocation(m_id, name.c_str()), v);
-	//}
+	// CREATED FUNCTION IN HOPES TO GET RID OF C2065 ERROR
+	unsigned int getID() {
+		return id;
+	}
 
-	//void ShaderLibrary::setFloat(const string& name, float v) const {
-	//	glUniform1f(glGetUniformLocation(m_id, name.c_str()), v);
-	//}
+	void ShaderLibrary::setInt(const string& name, int v) {
+		glUniform1i(glGetUniformLocation(getID(), name.c_str()), v);
+	}
 
-	//void setVec2(const string& name, float x, float y) const {
-	//	glUniform2f(glGetUniformLocation(m_id, name.c_str()), x, y);
-	//}
+	void ShaderLibrary::setFloat(const string& name, float v) {
+		glUniform1f(glGetUniformLocation(getID(), name.c_str()), v);
+	}
 
-	//void setVec3(const string& name, float x, float y, float z) const {
-	//	glUniform3f(glGetUniformLocation(m_id, name.c_str()), x, y, z);
-	//}
+	void setVec2(const string& name, float x, float y) {
+		glUniform2f(glGetUniformLocation(getID(), name.c_str()), x, y);
+	}
 
-	//void setVec4(const string& name, float x, float y, float z, float w) const {
-	//	glUniform4f(glGetUniformLocation(m_id, name.c_str()), x, y, z, w);
-	//}
+	void setVec3(const string& name, float x, float y, float z) {
+		glUniform3f(glGetUniformLocation(getID(), name.c_str()), x, y, z);
+	}
+
+	void setVec4(const string& name, float x, float y, float z, float w) {
+		glUniform4f(glGetUniformLocation(getID(), name.c_str()), x, y, z, w);
+	}
 }
