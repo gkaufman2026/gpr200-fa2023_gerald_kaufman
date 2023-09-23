@@ -9,7 +9,6 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
@@ -19,11 +18,11 @@ struct Vertex {
 };
 
 Vertex vertices[4] = {
-//    x      y      z      u      v
-   { 0.0f , 0.0f , 0.0f , 0.0f , 0.0f }, // Bottom left
-   { 1.0f , 0.0f , 0.0f , 1.0f , 0.0f }, // Bottom right
-   { 1.0f , 1.0f , 0.0f , 1.0f , 1.0f }, // Top right
-   { 0.0f , 1.0f , 0.0f , 0.0f , 1.0f }  // Top left
+//    x      y      z      u     v
+   {-0.5f, -0.5f, -0.5f, 0.0f, 1.0f }, // Bottom left
+   { 0.5f, -0.5f, -0.5f, 1.0f, 0.0f }, // Bottom right
+   { 0.5f,  0.5f, -0.5f, 1.0f, 1.0f }, // Top right
+   {-0.5f,  0.5f, -0.5f, 0.0f, 1.0f }  // Top left
 };
 
 unsigned int indices[6]{
@@ -32,8 +31,6 @@ unsigned int indices[6]{
 };
 
 
-float triangleColor[3] = { 1.0f, 0.5f, 0.0f };
-float triangleBrightness = 1.0f;
 bool showImGUIDemoWindow = true;
 
 unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned int* indicesData, int numIndices);
@@ -70,14 +67,28 @@ int main() {
 
 	unsigned int vao = createVAO(vertices, 4, indices, 6);
 
+	float sale = 1.75;
+	float sunColor[3] = {1.0, 0.5, 0.0};
+	float sunPosY = 18;
+	float sunSpeed = 0.5;
+	float sunGlow = 5.0;
+	float sunGlowBlur = 0.25;
+	float sunGlowRadius = 0.05;
+	float sunPosX = -1.75;
+	float strength = 0.5;
+	float frontForegroundHeight = 2.5;
+	float backForegroundHeight = 3.0;
+	float foregroundSlope = 0.1;
+	float frontForegroundVary = 3.5;
+	float backForegroundVary = 4.0;
+	float foregroundColor[3] = {0.55, 0.3, 0.1};
+	float foregroundTopColor[3] = {1.0, 1.0, 1.0};
+	float sunGradient[3] = {1.0, 0.8, 0.6};
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		//Set uniforms
-		shader.setVec3("_Color", triangleColor[0], triangleColor[1], triangleColor[2]);
-		shader.setFloat("_Brightness", triangleBrightness);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
@@ -89,8 +100,6 @@ int main() {
 
 			ImGui::Begin("Settings");
 			ImGui::Checkbox("Show Demo Window", &showImGUIDemoWindow);
-			ImGui::ColorEdit3("Color", triangleColor);
-			ImGui::SliderFloat("Brightness", &triangleBrightness, 0.0f, 1.0f);
 			ImGui::End();
 			if (showImGUIDemoWindow) {
 				ImGui::ShowDemoWindow(&showImGUIDemoWindow);
