@@ -67,9 +67,9 @@ int main() {
 
 	unsigned int vao = createVAO(vertices, 4, indices, 6);
 
-	float sale = 1.75;
+	float scale = 1.75;
 	float sunColor[3] = {1.0, 0.5, 0.0};
-	float sunPosY = 18;
+	float sunPosY = 18.0;
 	float sunSpeed = 0.5;
 	float sunGlow = 5.0;
 	float sunGlowBlur = 0.25;
@@ -92,6 +92,26 @@ int main() {
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
+		shader.setFloat("iScale", scale);
+		shader.setFloat("iSunPosY", sunPosY);
+		shader.setFloat("iSunSpeed", sunSpeed);
+		shader.setFloat("iSunGlow", sunGlow);
+		shader.setFloat("iSunGlowBlur", sunGlowBlur);
+		shader.setFloat("iSunGlowRadius", sunGlowRadius);
+		shader.setFloat("iSunPosX", sunPosX);
+		shader.setFloat("iStrength", strength);
+		shader.setFloat("iFrontForegroundHeight", frontForegroundHeight);
+		shader.setFloat("iBackForegroundHeight", backForegroundHeight);
+		shader.setFloat("iForegroundSlope", foregroundSlope);
+		shader.setFloat("iFrontForegroundVary", frontForegroundVary);
+		shader.setFloat("iBackForegroundVary", backForegroundVary);
+		shader.setFloat("iTime", glfwGetTime());
+		shader.setVec2("iResolution", SCREEN_WIDTH, SCREEN_HEIGHT);
+		shader.setVec3("iSunColor", sunColor[0], sunColor[1], sunColor[2]);
+		shader.setVec3("iForegroundColor", foregroundColor[0], foregroundColor[1], foregroundColor[2]);
+		shader.setVec3("iForegroundTopColor", foregroundTopColor[0], foregroundTopColor[1], foregroundTopColor[2]);
+		shader.setVec3("iSunGradient", sunGradient[0], sunGradient[1], sunGradient[2]);
+
 		//Render UI
 		{
 			ImGui_ImplGlfw_NewFrame();
@@ -100,6 +120,26 @@ int main() {
 
 			ImGui::Begin("Settings");
 			ImGui::Checkbox("Show Demo Window", &showImGUIDemoWindow);
+			// SUN/MOUNTAIN SHAPING
+			ImGui::SliderFloat("Sun Scale", &scale, 0.0f, 2.0f);
+			ImGui::SliderFloat("Sun Pos (X)", &sunPosX, -2.0f, 18.0f);
+			ImGui::SliderFloat("Sun Pos (Y)", &sunPosY, 0.0f, 18.0f);
+			ImGui::SliderFloat("Sun Speed", &sunSpeed, 0.0f, 2.0f);
+			ImGui::SliderFloat("Sun Glow", &sunGlow, 0.0f, 5.0f);
+			ImGui::SliderFloat("Sun Glow Radius", &sunGlowRadius, 0.0f, 1.0f);
+			ImGui::SliderFloat("Sun Glow Blur", &sunGlowBlur, 0.0f, 1.0f);
+			ImGui::SliderFloat("Glow Strength", &strength, 0.0f, 1.0f);
+			ImGui::SliderFloat("Mountain Height", &frontForegroundHeight, 0.0f, 3.0f);
+			ImGui::SliderFloat("Top Mountain Height", &backForegroundHeight, 0.0f, 3.0f);
+			ImGui::SliderFloat("Moutain Slope", &foregroundSlope, 0.0f, 1.0f);
+			ImGui::SliderFloat("Montain Slope Vary", &frontForegroundVary, 0.0f, 5.0f);
+			ImGui::SliderFloat("Top Montain Slope Vary", &backForegroundVary, 0.0f, 5.0f);
+			// COLORS
+			ImGui::ColorEdit3("Sun Color", sunColor);
+			ImGui::ColorEdit3("Mountain Color", foregroundColor);
+			ImGui::ColorEdit3("Top Mountain Color", foregroundTopColor);
+			ImGui::ColorEdit3("Sun Gradient", sunGradient);
+
 			ImGui::End();
 			if (showImGUIDemoWindow) {
 				ImGui::ShowDemoWindow(&showImGUIDemoWindow);
