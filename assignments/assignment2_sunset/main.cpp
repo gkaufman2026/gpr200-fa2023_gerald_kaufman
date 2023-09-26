@@ -19,17 +19,16 @@ struct Vertex {
 
 Vertex vertices[4] = {
 //    x      y      z      u     v
-   {-0.5f, -0.5f, -0.5f, 0.0f, 1.0f }, // Bottom left
-   { 0.5f, -0.5f, -0.5f, 1.0f, 0.0f }, // Bottom right
-   { 0.5f,  0.5f, -0.5f, 1.0f, 1.0f }, // Top right
-   {-0.5f,  0.5f, -0.5f, 0.0f, 1.0f }  // Top left
+   {-1.0f, -1.0f, 0.0f, 0.0f, 0.0f }, // Bottom left
+   { 1.0f, -1.0f, 0.0f, 1.0f, 0.0f }, // Bottom right
+   { 1.0f,  1.0f, 0.0f, 1.0f, 1.0f }, // Top right
+   {-1.0f,  1.0f, 0.0f, 0.0f, 1.0f }  // Top left
 };
 
 unsigned int indices[6]{
 	0, 1, 2, // TRIANGLE 1
-	0, 2, 3 // TRIANGLE 2
+	0, 2, 3  // TRIANGLE 2
 };
-
 
 bool showImGUIDemoWindow = true;
 
@@ -66,51 +65,36 @@ int main() {
 	shader.use();
 
 	unsigned int vao = createVAO(vertices, 4, indices, 6);
+	glBindVertexArray(vao);
 
-	float scale = 1.75;
-	float sunColor[3] = {1.0, 0.5, 0.0};
-	float sunPosY = 18.0;
 	float sunSpeed = 0.5;
-	float sunGlow = 5.0;
-	float sunGlowBlur = 0.25;
-	float sunGlowRadius = 0.05;
-	float sunPosX = -1.75;
-	float strength = 0.5;
-	float frontForegroundHeight = 2.5;
-	float backForegroundHeight = 3.0;
-	float foregroundSlope = 0.1;
-	float frontForegroundVary = 3.5;
-	float backForegroundVary = 4.0;
-	float foregroundColor[3] = {0.55, 0.3, 0.1};
-	float foregroundTopColor[3] = {1.0, 1.0, 1.0};
-	float sunGradient[3] = {1.0, 0.8, 0.6};
+	float sunRadius = 0.15;
+	float glowRadius = 0.5;
+	float topDayLight[3] = { 0.8, 0.4, 0.3 };
+	float bottomDayLight[3] = { 0.5, 0.52, 0.9 };
+	float topNightLight[3] = { 0.7, 0.3, 0.03 };
+	float bottomNightLight[3] = { 0.3, 0.15, 0.7 };
+	float sunColor[3] = { 0.95, 0.95, 0.725 };
+	float hillColor[3] = { 0.45, 0.56, 0.35 };
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-
-		shader.setFloat("iScale", scale);
-		shader.setFloat("iSunPosY", sunPosY);
 		shader.setFloat("iSunSpeed", sunSpeed);
-		shader.setFloat("iSunGlow", sunGlow);
-		shader.setFloat("iSunGlowBlur", sunGlowBlur);
-		shader.setFloat("iSunGlowRadius", sunGlowRadius);
-		shader.setFloat("iSunPosX", sunPosX);
-		shader.setFloat("iStrength", strength);
-		shader.setFloat("iFrontForegroundHeight", frontForegroundHeight);
-		shader.setFloat("iBackForegroundHeight", backForegroundHeight);
-		shader.setFloat("iForegroundSlope", foregroundSlope);
-		shader.setFloat("iFrontForegroundVary", frontForegroundVary);
-		shader.setFloat("iBackForegroundVary", backForegroundVary);
+		shader.setFloat("iSunRadius", sunRadius);
+		shader.setFloat("iGlowRadius", glowRadius);
 		shader.setFloat("iTime", glfwGetTime());
 		shader.setVec2("iResolution", SCREEN_WIDTH, SCREEN_HEIGHT);
+		shader.setVec3("iTopDayLightCycle", topDayLight[0], topDayLight[1], topDayLight[2]);
+		shader.setVec3("iBottomDayLightCycle", bottomDayLight[0], bottomDayLight[1], bottomDayLight[2]);
+		shader.setVec3("iTopNightLightCycle", topNightLight[0], topNightLight[1], topNightLight[2]);
+		shader.setVec3("iBottomNightLightCycle", bottomNightLight[0], bottomNightLight[1], bottomNightLight[2]);
 		shader.setVec3("iSunColor", sunColor[0], sunColor[1], sunColor[2]);
-		shader.setVec3("iForegroundColor", foregroundColor[0], foregroundColor[1], foregroundColor[2]);
-		shader.setVec3("iForegroundTopColor", foregroundTopColor[0], foregroundTopColor[1], foregroundTopColor[2]);
-		shader.setVec3("iSunGradient", sunGradient[0], sunGradient[1], sunGradient[2]);
+		shader.setVec3("iHillColor", hillColor[0], hillColor[1], hillColor[2]);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
 		//Render UI
 		{
@@ -120,25 +104,15 @@ int main() {
 
 			ImGui::Begin("Settings");
 			ImGui::Checkbox("Show Demo Window", &showImGUIDemoWindow);
-			// SUN/MOUNTAIN SHAPING
-			ImGui::SliderFloat("Sun Scale", &scale, 0.0f, 2.0f);
-			ImGui::SliderFloat("Sun Pos (X)", &sunPosX, -2.0f, 18.0f);
-			ImGui::SliderFloat("Sun Pos (Y)", &sunPosY, 0.0f, 18.0f);
 			ImGui::SliderFloat("Sun Speed", &sunSpeed, 0.0f, 2.0f);
-			ImGui::SliderFloat("Sun Glow", &sunGlow, 0.0f, 5.0f);
-			ImGui::SliderFloat("Sun Glow Radius", &sunGlowRadius, 0.0f, 1.0f);
-			ImGui::SliderFloat("Sun Glow Blur", &sunGlowBlur, 0.0f, 1.0f);
-			ImGui::SliderFloat("Glow Strength", &strength, 0.0f, 1.0f);
-			ImGui::SliderFloat("Mountain Height", &frontForegroundHeight, 0.0f, 3.0f);
-			ImGui::SliderFloat("Top Mountain Height", &backForegroundHeight, 0.0f, 3.0f);
-			ImGui::SliderFloat("Moutain Slope", &foregroundSlope, 0.0f, 1.0f);
-			ImGui::SliderFloat("Montain Slope Vary", &frontForegroundVary, 0.0f, 5.0f);
-			ImGui::SliderFloat("Top Montain Slope Vary", &backForegroundVary, 0.0f, 5.0f);
-			// COLORS
+			ImGui::SliderFloat("Sun Radius", &sunRadius, 0.0f, 2.0f);
+			ImGui::SliderFloat("Glow Radius", &glowRadius, 0.0f, 2.0f);
+			ImGui::ColorEdit3("Top Sky Daylight Gradient", topDayLight);
+			ImGui::ColorEdit3("Bottom Sky Daylight Gradient", bottomDayLight);
+			ImGui::ColorEdit3("Top Sky Night Gradient", topNightLight);
+			ImGui::ColorEdit3("Bottom Night Gradient", bottomNightLight);
 			ImGui::ColorEdit3("Sun Color", sunColor);
-			ImGui::ColorEdit3("Mountain Color", foregroundColor);
-			ImGui::ColorEdit3("Top Mountain Color", foregroundTopColor);
-			ImGui::ColorEdit3("Sun Gradient", sunGradient);
+			ImGui::ColorEdit3("Hill Color", hillColor);
 
 			ImGui::End();
 			if (showImGUIDemoWindow) {
