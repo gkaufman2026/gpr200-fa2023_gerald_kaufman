@@ -70,20 +70,20 @@ int main() {
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//Set uniforms
-		unsigned int textureA = loadTexture("assets/bricks.jpg");
-		unsigned int textureB = loadTexture("assets/noise.png");
+		unsigned int textureA = loadTexture("assets/bricks.jpg", 0, 0);
+		unsigned int textureB = loadTexture("assets/noise.png", 0, 0);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureA);
-
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, textureB);
 
+		shader.use();
 		shader.setInt("_BrickTexture", 0);
 		shader.setInt("_NoiseTexture", 1);
 
-		shader.use();
+		ew::Shader backgroundShader("assets/background.vert", "assets/background.frag");
+		ew::Shader characterShader("assets/character.vert", "assets/character.frag");
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
