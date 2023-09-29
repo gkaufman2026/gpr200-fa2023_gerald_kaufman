@@ -60,6 +60,8 @@ int main() {
 	ImGui_ImplOpenGL3_Init();
 
 	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
+	ew::Shader backgroundShader("assets/background.vert", "assets/background.frag");
+	//ew::Shader characterShader("assets/character.vert", "assets/character.frag");
 
 	unsigned int quadVAO = createVAO(vertices, 4, indices, 6);
 
@@ -70,20 +72,20 @@ int main() {
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		unsigned int textureA = loadTexture("assets/bricks.jpg", 0, 0);
-		unsigned int textureB = loadTexture("assets/noise.png", 0, 0);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureA);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, textureB);
+		//unsigned int textureB = loadTexture("assets/noise.png", 0, 0);
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, textureB);
 
 		shader.use();
+		unsigned int background = loadTexture("assets/bricks.jpg", 0, 0);
+
 		shader.setInt("_BrickTexture", 0);
 		shader.setInt("_NoiseTexture", 1);
 
-		ew::Shader backgroundShader("assets/background.vert", "assets/background.frag");
-		ew::Shader characterShader("assets/character.vert", "assets/character.frag");
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, background);
+
+		//backgroundShader.use();
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
