@@ -45,6 +45,7 @@ int main() {
 		printf("GLFW failed to create window");
 		return 1;
 	}
+
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
@@ -59,33 +60,31 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
-	ew::Shader backgroundShader("assets/background.vert", "assets/background.frag");
-	//ew::Shader characterShader("assets/character.vert", "assets/character.frag");
+	ew::Shader background("assets/background.vert", "assets/background.frag");
+	//ew::Shader character("assets/character.vert", "assets/character.frag");
 
 	unsigned int quadVAO = createVAO(vertices, 4, indices, 6);
 
 	glBindVertexArray(quadVAO);
+
+	unsigned int backgroundTexture = loadTexture("assets/bricks.jpg", 1, 1);
+	unsigned int noiseTexture = loadTexture("assets/noise.png", 1, 1);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//unsigned int textureB = loadTexture("assets/noise.png", 0, 0);
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, textureB);
-
-		shader.use();
-		unsigned int background = loadTexture("assets/bricks.jpg", 0, 0);
-
-		shader.setInt("_BrickTexture", 0);
-		shader.setInt("_NoiseTexture", 1);
-
+		background.use();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, background);
+		glBindTexture(GL_TEXTURE_2D, backgroundTexture);
 
-		//backgroundShader.use();
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, noiseTexture);
+		background.setInt("_noiseTexture", 1);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
