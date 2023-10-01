@@ -61,14 +61,27 @@ int main() {
 	ImGui_ImplOpenGL3_Init();
 
 	ew::Shader background("assets/background.vert", "assets/background.frag");
-	//ew::Shader character("assets/character.vert", "assets/character.frag");
+	ew::Shader character("assets/character.vert", "assets/character.frag");
 
 	unsigned int quadVAO = createVAO(vertices, 4, indices, 6);
 
 	glBindVertexArray(quadVAO);
 
-	unsigned int backgroundTexture = loadTexture("assets/bricks.jpg", 1, 1);
-	unsigned int noiseTexture = loadTexture("assets/noise.png", 1, 1);
+	// ORGANIZED TEXTURES INTO TEXTURES SUBDIRECTORY
+	unsigned int backgroundTexture = loadTexture("assets/textures/bricks.jpg", 1, 0, 1);
+	unsigned int noiseTexture = loadTexture("assets/textures/noise.png", 1, 0, 1);
+	unsigned int characterTexture = loadTexture("assets/textures/character.png", 1, 1, 1); // 1 3 1
+
+	character.use();
+
+	float noiseRate = 0.05;
+	float posX = 0, posY = 0;
+	int imageSizeWidth = 512;
+	int imageSizeHeight = 512;
+
+	character.setFloat("_posX", posX);
+	character.setFloat("_posY", posY);
+	character.setVec2("_aspectRatio", SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -81,10 +94,22 @@ int main() {
 		background.use();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, backgroundTexture);
+		background.setInt("_backgroundTexture", 0);
 
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, noiseTexture);
 		background.setInt("_noiseTexture", 1);
+		background.setFloat("iTime", float (glfwGetTime()));
+		background.setFloat("_noiseRate", noiseRate);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
+
+		character.use();
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, characterTexture);
+		character.setInt("_characterTexture", 2);
+		character.setVec2("_imageSize", imageSizeWidth, imageSizeHeight);
+
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
@@ -95,6 +120,9 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Settings");
+			ImGui::SliderFloat("Noise Rate", &noiseRate, 0.0f, 1.0f);
+			ImGui::InputInt("Image Scale (X-Axis)", &imageSizeWidth, 0, 512);
+			ImGui::InputInt("Image Scale (Y-Axis)", &imageSizeHeight, 0, 512);
 			ImGui::End();
 
 			ImGui::Render();
@@ -138,4 +166,3 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
-
