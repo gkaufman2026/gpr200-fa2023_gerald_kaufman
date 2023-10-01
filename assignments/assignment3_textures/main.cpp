@@ -68,8 +68,8 @@ int main() {
 	glBindVertexArray(quadVAO);
 
 	// ORGANIZED TEXTURES INTO TEXTURES SUBDIRECTORY
-	unsigned int backgroundTexture = loadTexture("assets/textures/background.png", 1, 0, 1);
-	unsigned int secondBackgroundTexture = loadTexture("assets/textures/pokeball.png", 1, 0, 1);
+	unsigned int backgroundTexture = loadTexture("assets/textures/background.png", 2, 0, 1); // replaced brick texture
+	unsigned int secondBackgroundTexture = loadTexture("assets/textures/pokeball.png", 1, 1, 1);
 	unsigned int noiseTexture = loadTexture("assets/textures/noise.png", 1, 0, 1);
 	unsigned int characterTexture = loadTexture("assets/textures/character.png", 1, 1, 1);
 
@@ -79,13 +79,14 @@ int main() {
 	float posX = 0, posY = 0;
 	int imageSizeWidth = 200;
 	int imageSizeHeight = 200;
+	float yAxisMovement = 0.0;
+	float xAxisMovement = 0.0;
+	float transparencyRate = 1.0;
 
 	character.setFloat("_posX", posX);
 	character.setFloat("_posY", posY);
 	character.setVec2("_aspectRatio", SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -114,7 +115,10 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, characterTexture);
 		character.setInt("_characterTexture", 3);
 		character.setVec2("_imageSize", imageSizeWidth, imageSizeHeight);
-
+		character.setFloat("_yAxisMovement", yAxisMovement);
+		character.setFloat("_xAxisMovement", xAxisMovement);
+		character.setFloat("iTime", float(glfwGetTime()));
+		character.setFloat("_transparencyRate", transparencyRate);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
@@ -126,8 +130,11 @@ int main() {
 
 			ImGui::Begin("Settings");
 			ImGui::SliderFloat("Distortion Rate", &noiseRate, 0.0f, 0.5f); // lowered it during development. TODO PUT BACK TO 1
-			ImGui::InputInt("Image Scale (X-Axis)", &imageSizeWidth, 0, 512);
-			ImGui::InputInt("Image Scale (Y-Axis)", &imageSizeHeight, 0, 512);
+			ImGui::InputInt("Img Scale (X-Axis)", &imageSizeWidth, 0, 512);
+			ImGui::InputInt("Img Scale (Y-Axis)", &imageSizeHeight, 0, 512);
+			ImGui::SliderFloat("Character Movement (X-Axis)", &xAxisMovement, -3.0f, 3.0f);
+			ImGui::SliderFloat("Character Movement (Y-Axis)", &yAxisMovement, -1.75f, 1.75f);
+			ImGui::SliderFloat("Character Opacity Speed", &transparencyRate, 1.0f, 2.0f);
 			ImGui::End();
 
 			ImGui::Render();

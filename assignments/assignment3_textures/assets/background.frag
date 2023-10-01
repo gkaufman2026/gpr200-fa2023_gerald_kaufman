@@ -13,7 +13,7 @@ void main() {
 
     vec4 backImage = texture(_backgroundTexture, backgroundUV);
     vec4 frontImage = texture(_secondBackgroundTexture, backgroundUV);
-    vec3 background = mix(backImage.rgb, frontImage.rgb, frontImage.a * 0.5);
+    vec3 background = mix(backImage.rgb, frontImage.rgb, frontImage.a * 0.85);
 
     FragColor = vec4(background, 1.0);
 }
