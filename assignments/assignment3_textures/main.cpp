@@ -68,16 +68,17 @@ int main() {
 	glBindVertexArray(quadVAO);
 
 	// ORGANIZED TEXTURES INTO TEXTURES SUBDIRECTORY
-	unsigned int backgroundTexture = loadTexture("assets/textures/bricks.jpg", 1, 0, 1);
+	unsigned int backgroundTexture = loadTexture("assets/textures/background.png", 1, 0, 1);
+	unsigned int secondBackgroundTexture = loadTexture("assets/textures/pokeball.png", 1, 0, 1);
 	unsigned int noiseTexture = loadTexture("assets/textures/noise.png", 1, 0, 1);
-	unsigned int characterTexture = loadTexture("assets/textures/character.png", 1, 1, 1); // 1 3 1
+	unsigned int characterTexture = loadTexture("assets/textures/character.png", 1, 1, 1);
 
 	character.use();
 
 	float noiseRate = 0.05;
 	float posX = 0, posY = 0;
-	int imageSizeWidth = 512;
-	int imageSizeHeight = 512;
+	int imageSizeWidth = 200;
+	int imageSizeHeight = 200;
 
 	character.setFloat("_posX", posX);
 	character.setFloat("_posY", posY);
@@ -102,12 +103,16 @@ int main() {
 		background.setFloat("iTime", float (glfwGetTime()));
 		background.setFloat("_noiseRate", noiseRate);
 
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, secondBackgroundTexture);
+		background.setInt("_backgroundTexture", 2);
+
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
 		character.use();
-		glActiveTexture(GL_TEXTURE2);
+		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, characterTexture);
-		character.setInt("_characterTexture", 2);
+		character.setInt("_characterTexture", 3);
 		character.setVec2("_imageSize", imageSizeWidth, imageSizeHeight);
 
 
@@ -120,7 +125,7 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Settings");
-			ImGui::SliderFloat("Noise Rate", &noiseRate, 0.0f, 1.0f);
+			ImGui::SliderFloat("Distortion Rate", &noiseRate, 0.0f, 0.5f); // lowered it during development. TODO PUT BACK TO 1
 			ImGui::InputInt("Image Scale (X-Axis)", &imageSizeWidth, 0, 512);
 			ImGui::InputInt("Image Scale (Y-Axis)", &imageSizeHeight, 0, 512);
 			ImGui::End();
