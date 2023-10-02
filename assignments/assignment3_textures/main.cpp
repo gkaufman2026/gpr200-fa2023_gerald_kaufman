@@ -87,6 +87,8 @@ int main() {
 	character.setFloat("_posY", posY);
 	character.setVec2("_aspectRatio", SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();

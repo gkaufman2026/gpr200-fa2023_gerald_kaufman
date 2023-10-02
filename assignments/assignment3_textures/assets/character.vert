@@ -12,7 +12,5 @@ void main() {
     float newX = (vPos.x + _posX + _xAxisMovement) * (_imageSize.x / _aspectRatio.x);
     float newY = (vPos.y + _posY + _yAxisMovement) * (_imageSize.y / _aspectRatio.y);
 
-    
-
     gl_Position = vec4(newX, newY, vPos.z, 1.0);
 }
