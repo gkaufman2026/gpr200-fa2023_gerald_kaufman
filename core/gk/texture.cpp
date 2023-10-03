@@ -2,7 +2,7 @@
 #include "../ew/external/stb_image.h"
 #include "../ew/external/glad.h"
 
-unsigned int loadTexture(const char* filePath, int wrapMode, int filterMode) {
+unsigned int loadTexture(const char* filePath, int wrapMode, int minFilter, int magFilter) {
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, numComponents;
 	unsigned char* data = stbi_load(filePath, &width, &height, &numComponents, 0);
@@ -20,8 +20,8 @@ unsigned int loadTexture(const char* filePath, int wrapMode, int filterMode) {
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapS(wrapMode));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapT(wrapMode));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getMinFilter(filterMode));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, getMagFilter(filterMode));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getMinFilter(minFilter));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, getMagFilter(magFilter));
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
