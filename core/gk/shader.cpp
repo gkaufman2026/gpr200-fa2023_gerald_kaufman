@@ -92,4 +92,8 @@ namespace shaderLib {
 	void ShaderLibrary::setVec4(const string& name, float x, float y, float z, float w) {
 		glUniform4f(glGetUniformLocation(getID(), name.c_str()), x, y, z, w);
 	}
+
+	void ShaderLibrary::setMat4(const string& name, const ew::Mat4& v) const {
+		glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, &v[0][0]);
+	}
 }
