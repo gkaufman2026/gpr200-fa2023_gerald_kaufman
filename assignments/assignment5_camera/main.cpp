@@ -12,6 +12,8 @@
 #include <ew/procGen.h>
 #include <ew/transform.h>
 
+#include <gk/camera.h>
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 //Projection will account for aspect ratio!
@@ -20,6 +22,7 @@ const int SCREEN_HEIGHT = 720;
 
 const int NUM_CUBES = 4;
 ew::Transform cubeTransforms[NUM_CUBES];
+cameraLib::Camera camera;
 
 int main() {
 	printf("Initializing...");
