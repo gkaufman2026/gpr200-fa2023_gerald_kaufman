@@ -22,7 +22,9 @@ const int SCREEN_HEIGHT = 720;
 
 const int NUM_CUBES = 4;
 ew::Transform cubeTransforms[NUM_CUBES];
-cameraLib::Camera camera;
+gk::Camera camera = {
+	ew::Vec3(0, 0, 5), ew::Vec3(0,0,0), ew::Radians(60), float(SCREEN_WIDTH) / SCREEN_HEIGHT, 0.1, 100, false, 6
+};
 
 int main() {
 	printf("Initializing...");
@@ -86,6 +88,10 @@ int main() {
 			cubeMesh.draw();
 		}
 
+
+		shader.setMat4("_View", camera.ViewMatrix());
+		shader.setMat4("_Clip", camera.ProjectionMatrix());
+
 		//Render UI
 		{
 			ImGui_ImplGlfw_NewFrame();
@@ -93,7 +99,7 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Settings");
-			ImGui::Text("Cubes");
+			/*ImGui::Text("Cubes");
 			for (size_t i = 0; i < NUM_CUBES; i++)
 			{
 				ImGui::PushID(i);
@@ -103,8 +109,21 @@ int main() {
 					ImGui::DragFloat3("Scale", &cubeTransforms[i].scale.x, 0.05f);
 				}
 				ImGui::PopID();
-			}
+			}*/
 			ImGui::Text("Camera");
+			ImGui::DragFloat3("Position", &camera.position.x, 0.05f);
+			ImGui::DragFloat3("Target", &camera.target.x, 0.05f);
+
+			ImGui::Checkbox("Orthographic", &camera.orthographic);
+			if (camera.orthographic) {
+				ImGui::DragFloat("Ortho Height", &camera.orthoSize, 0, 100000);
+				ImGui::DragFloat("Near Plane", &camera.nearPlane, 0, 100);
+				ImGui::DragFloat("Far Plane", &camera.farPlane, 0, 100);
+			}
+			else if (!camera.orthographic) {
+
+			}
+
 			ImGui::End();
 			
 			ImGui::Render();
