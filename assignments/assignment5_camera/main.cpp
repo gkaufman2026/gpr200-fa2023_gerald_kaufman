@@ -58,7 +58,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
-	
+
 	//Cube mesh
 	ew::Mesh cubeMesh(ew::createCube(0.5f));
 
@@ -133,7 +133,7 @@ int main() {
 			ImGui::DragFloat("Far Plane", &camera.farPlane, 1.0f);
 
 			ImGui::End();
-			
+
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
@@ -147,4 +147,3 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
-
