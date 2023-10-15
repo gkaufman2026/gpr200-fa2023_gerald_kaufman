@@ -22,9 +22,7 @@ const int SCREEN_HEIGHT = 720;
 
 const int NUM_CUBES = 4;
 ew::Transform cubeTransforms[NUM_CUBES];
-gk::Camera camera = {
-	ew::Vec3(0, 0, 5), ew::Vec3(0,0,0), ew::Radians(60), float(SCREEN_WIDTH) / SCREEN_HEIGHT, 0.1, 100, false, 6
-};
+gk::Camera camera;
 
 int main() {
 	printf("Initializing...");
@@ -64,6 +62,14 @@ int main() {
 	//Cube mesh
 	ew::Mesh cubeMesh(ew::createCube(0.5f));
 
+	camera.position = ew::Vec3(0.0, 0.0, 5.0);
+	camera.target = ew::Vec3(0.0, 0.0, 0.0);
+	camera.fov = 62;
+	camera.aspectRatio = static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT);
+	camera.orthoSize = 6;
+	camera.nearPlane = 0.25f;
+	camera.farPlane = 100.0f;
+
 	//Cube positions
 	for (size_t i = 0; i < NUM_CUBES; i++)
 	{
@@ -99,7 +105,7 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Settings");
-			/*ImGui::Text("Cubes");
+			ImGui::Text("Cubes");
 			for (size_t i = 0; i < NUM_CUBES; i++)
 			{
 				ImGui::PushID(i);
@@ -109,20 +115,22 @@ int main() {
 					ImGui::DragFloat3("Scale", &cubeTransforms[i].scale.x, 0.05f);
 				}
 				ImGui::PopID();
-			}*/
+			}
 			ImGui::Text("Camera");
 			ImGui::DragFloat3("Position", &camera.position.x, 0.05f);
 			ImGui::DragFloat3("Target", &camera.target.x, 0.05f);
 
 			ImGui::Checkbox("Orthographic", &camera.orthographic);
 			if (camera.orthographic) {
-				ImGui::DragFloat("Ortho Height", &camera.orthoSize, 0, 100000);
-				ImGui::DragFloat("Near Plane", &camera.nearPlane, 0, 100);
-				ImGui::DragFloat("Far Plane", &camera.farPlane, 0, 100);
+				ImGui::SliderFloat("Ortho Height", &camera.orthoSize, 0, 100);
 			}
 			else if (!camera.orthographic) {
-
+				//fov, aspectRatio, nearPlane, farPlane
+				ImGui::DragFloat("FOV", &camera.fov, 0.05f);
 			}
+
+			ImGui::DragFloat("Near Plane", &camera.nearPlane, 0.0001f);
+			ImGui::DragFloat("Far Plane", &camera.farPlane, 1.0f);
 
 			ImGui::End();
 			
