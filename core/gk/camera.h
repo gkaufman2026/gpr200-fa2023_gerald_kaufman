@@ -19,9 +19,8 @@ namespace gk {
 		ew::Mat4 ProjectionMatrix() { // View->Clip
 			if (orthographic) { // orthographic
 				return Orthographic(orthoSize, aspectRatio, nearPlane, farPlane);
-			}
-			else { // Perspective
-				return Perspective(fov, aspectRatio, nearPlane, farPlane);
+			} else { // Perspective
+				return Perspective(ew::Radians(fov), aspectRatio, nearPlane, farPlane);
 			}
 		}
 	};

@@ -67,12 +67,11 @@ int main() {
 	camera.fov = 62;
 	camera.aspectRatio = static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT);
 	camera.orthoSize = 6;
-	camera.nearPlane = 0.25f;
+	camera.nearPlane = 0.1f;
 	camera.farPlane = 100.0f;
 
 	//Cube positions
-	for (size_t i = 0; i < NUM_CUBES; i++)
-	{
+	for (size_t i = 0; i < NUM_CUBES; i++) {
 		cubeTransforms[i].position.x = i % (NUM_CUBES / 2) - 0.5;
 		cubeTransforms[i].position.y = i / (NUM_CUBES / 2) - 0.5;
 	}
@@ -87,8 +86,7 @@ int main() {
 		shader.use();
 
 		//TODO: Set model matrix uniform
-		for (size_t i = 0; i < NUM_CUBES; i++)
-		{
+		for (size_t i = 0; i < NUM_CUBES; i++) {
 			//Construct model matrix
 			shader.setMat4("_Model", cubeTransforms[i].getModelMatrix());
 			cubeMesh.draw();
@@ -125,12 +123,10 @@ int main() {
 				ImGui::SliderFloat("Ortho Height", &camera.orthoSize, 0, 100);
 			}
 			else if (!camera.orthographic) {
-				//fov, aspectRatio, nearPlane, farPlane
 				ImGui::DragFloat("FOV", &camera.fov, 0.05f);
 			}
-
-			ImGui::DragFloat("Near Plane", &camera.nearPlane, 0.0001f);
-			ImGui::DragFloat("Far Plane", &camera.farPlane, 1.0f);
+			ImGui::DragFloat("Near Plane", &camera.nearPlane, 0.1f);
+			ImGui::DragFloat("Far Plane", &camera.farPlane, 0.1);
 
 			ImGui::End();
 
@@ -143,7 +139,6 @@ int main() {
 	printf("Shutting down...");
 }
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height)
-{
+void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
