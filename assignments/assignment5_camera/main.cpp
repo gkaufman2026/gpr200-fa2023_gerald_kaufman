@@ -15,11 +15,14 @@
 #include <gk/camera.h>
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
-void moveCamera(GLFWwindow* window, gk::Camera *camera, gk::CameraControls *cameraController, float deltaTime);
+void moveCamera(GLFWwindow* window, gk::Camera *camera, gk::CameraControls *controls, float deltaTime);
+void resetCamera(bool willReset);
 
 //Projection will account for aspect ratio!
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
+
+bool willReset;
 
 const int NUM_CUBES = 4;
 ew::Transform cubeTransforms[NUM_CUBES];
@@ -71,6 +74,8 @@ int main() {
 	camera.orthoSize = 6;
 	camera.nearPlane = 0.1f;
 	camera.farPlane = 100.0f;
+
+	controls.yaw = -90;
 
 	//Cube positions
 	for (size_t i = 0; i < NUM_CUBES; i++) {
@@ -135,6 +140,14 @@ int main() {
 			}
 			ImGui::DragFloat("Near Plane", &camera.nearPlane, 0.1f);
 			ImGui::DragFloat("Far Plane", &camera.farPlane, 0.1);
+
+			ImGui::Text("Camera Controller");
+
+			ImGui::Text("Yaw: %f", controls.yaw);
+			ImGui::Text("Pitch: %f", controls.pitch);
+			ImGui::DragFloat("Move Speed", &controls.moveSpeed, 1);
+			ImGui::Checkbox("Reset", &willReset);
+			resetCamera(willReset);
 
 			ImGui::End();
 
@@ -203,11 +216,27 @@ void moveCamera(GLFWwindow* window, gk::Camera* camera, gk::CameraControls* cont
 		camera->position += right * controls->moveSpeed * deltaTime;
 	} if (glfwGetKey(window, GLFW_KEY_A)) {
 		camera->position -= right * controls->moveSpeed * deltaTime;
-	} if (glfwGetKey(window, GLFW_KEY_SPACE)) {
+	} if (glfwGetKey(window, GLFW_KEY_E)) {
 		camera->position += up * controls->moveSpeed * deltaTime;
-	} if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
+	} if (glfwGetKey(window, GLFW_KEY_Q)) {
 		camera->position -= up * controls->moveSpeed * deltaTime;
 	}
 
 	camera->target = camera->position + forward;
+}
+
+void resetCamera(bool willReset) {
+	if (willReset) {
+		camera.position = ew::Vec3(0.0, 0.0, 5.0);
+		camera.target = ew::Vec3(0.0, 0.0, 0.0);
+		camera.fov = 62;
+		camera.aspectRatio = static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT);
+		camera.orthoSize = 6;
+		camera.nearPlane = 0.1f;
+		camera.farPlane = 100.0f;
+		camera.orthographic = false;
+		controls = gk::CameraControls();
+		controls.yaw = -90;
+		controls.pitch = 0;
+	}
 }
