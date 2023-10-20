@@ -168,30 +168,46 @@ void moveCamera(GLFWwindow* window, gk::Camera* camera, gk::CameraControls* cont
 		controls->prevMouseY = mouseY;
 	}
 
-	//TODO: Get mouse position delta for this frame
-	//TODO: Add to yaw and pitch
-	//TODO: Clamp pitch between -89 and 89 degrees
+	double xOffset = mouseX - controls->prevMouseX;
+	double yOffset = controls->prevMouseY - mouseY;
+	
+	controls->yaw += xOffset * controls->mouseSensitivity;
+	controls->pitch += yOffset * controls->mouseSensitivity;
+
+	if (controls->pitch > 89.0f) {
+		controls->pitch = 89.0f;
+
+	} else if (controls->pitch < -89.0f) {
+		controls->pitch = -89.0f;
+	}
 
 	controls->prevMouseX = mouseX;
 	controls->prevMouseY = mouseY;
 
-	//Construct forward vector using yaw and pitch. Don't forget to convert to radians!
 	ew::Vec3 forward;
-	//By setting target to a point in front of the camera along its forward direction, our LookAt will be updated accordingly when rendering.
+	forward.x = cos(ew::Radians(controls->yaw)) * cos(ew::Radians(controls->pitch));
+	forward.y = sin(ew::Radians(controls->pitch));
+	forward.z = sin(ew::Radians(controls->yaw)) * cos(ew::Radians(controls->pitch));
+
 	camera->target = camera->position + forward;
 
-	//TODO: Using camera forward and world up (0,1,0), construct camera right and up vectors. Graham-schmidt process!
-	ew::Vec3 right;
-	ew::Vec3 up;
-	//TODO: Keyboard controls for moving along forward, back, right, left, up, and down. See Requirements for key mappings.
-	//EXAMPLE: Moving along forward axis if W is held.
-	//Note that this is framerate dependent, and will be very fast until you scale by deltaTime. See the next section.
+	ew::Vec3 worldUp = { 0.0, 1.0, 0.0 };
+	ew::Vec3 right = ew::Normalize(ew::Cross(forward, worldUp));
+	ew::Vec3 up = ew::Normalize(ew::Cross(right, forward));
 
 	if (glfwGetKey(window, GLFW_KEY_W)) {
-		camera->position += forward * controls->moveSpeed;
+		camera->position += forward * controls->moveSpeed * deltaTime;
+	} if (glfwGetKey(window, GLFW_KEY_S)) {
+		camera->position -= forward * controls->moveSpeed * deltaTime;
+	} if (glfwGetKey(window, GLFW_KEY_D)) {
+		camera->position += right * controls->moveSpeed * deltaTime;
+	} if (glfwGetKey(window, GLFW_KEY_A)) {
+		camera->position -= right * controls->moveSpeed * deltaTime;
+	} if (glfwGetKey(window, GLFW_KEY_SPACE)) {
+		camera->position += up * controls->moveSpeed * deltaTime;
+	} if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)) {
+		camera->position -= up * controls->moveSpeed * deltaTime;
 	}
 
 	camera->target = camera->position + forward;
-
-	camera->position += forward * controls->moveSpeed * deltaTime;
 }
