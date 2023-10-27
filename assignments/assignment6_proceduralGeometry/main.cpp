@@ -84,20 +84,21 @@ int main() {
 	ew::MeshData cubeMeshData = ew::createCube(0.5f);
 	ew::Mesh cubeMesh(cubeMeshData);
 
-	ew::MeshData sphereMeshData = gk::createSphere(0.5f, 64);
-	ew::Mesh sphereMesh(sphereMeshData);
+	//ew::MeshData sphereMeshData = gk::createSphere(0.5f, 64);
+	//ew::Mesh sphereMesh(sphereMeshData);
 
-	//ew::MeshData planeMeshData = gk::createPlane(0.5f, 64);
-	//ew::Mesh planeMesh(planeMeshData);
+	ew::MeshData planeMeshData = gk::createPlane(1.0f, 1.0f, 5);
+	ew::Mesh planeMesh(planeMeshData);
 
-	//ew::MeshData cylinderMeshData = gk::createCylinder(0.5f, 64);
-	//ew::Mesh cylinderMesh(cylinderMeshData);
+	ew::MeshData cylinderMeshData = gk::createCylinder(2.0f, 1.0f, 8);
+	ew::Mesh cylinderMesh(cylinderMeshData);
 
 	//Initialize transforms
-	ew::Transform cubeTransform;
+	ew::Transform cubeTransform, planeTransform, sphereTransform, cylinderTransform;
 
-	ew::Transform sphereTransform;
-	sphereTransform.position = ew::Vec3(1.0f, 0.0f, 0.0f);
+	planeTransform.position = ew::Vec3(3.0f, 0.0f, 0.0f);
+	//sphereTransform.position = ew::Vec3(1.0f, 0.0f, 0.0f);
+	cylinderTransform.position = ew::Vec3(-3.0f, 0.0f, 0.0f);
 
 	resetCamera(camera,cameraController);
 
@@ -133,9 +134,15 @@ int main() {
 		//Draw cube
 		shader.setMat4("_Model", cubeTransform.getModelMatrix());
 		cubeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
-		
-		shader.setMat4("_Model", sphereTransform.getModelMatrix());
-		sphereMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+
+		shader.setMat4("_Model", planeTransform.getModelMatrix());
+		planeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+
+		//shader.setMat4("_Model", sphereTransform.getModelMatrix());
+		//sphereMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+
+		shader.setMat4("_Model", cylinderTransform.getModelMatrix());
+		cylinderMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
 		//Render UI
 		{
@@ -211,5 +218,3 @@ void resetCamera(ew::Camera& camera, ew::CameraController& cameraController) {
 	cameraController.yaw = 0.0f;
 	cameraController.pitch = 0.0f;
 }
-
-
