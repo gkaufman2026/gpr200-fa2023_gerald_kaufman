@@ -8,11 +8,11 @@ ew::MeshData gk::createSphere(float radius, int numSegments) {
 
 ew::MeshData gk::createCylinder(float height, float radius, int numSegments) {
     ew::MeshData mesh;
-    
+
     float topHeight = height / 2.0f, bottomHeight = -topHeight, thetaStep = ew::TAU / numSegments, theta;
     ew::Vertex top, bottom, topVertex, bottomVertex;
 
-    top.pos = ew::Vec3((0, topHeight, 0));
+    top.pos = ew::Vec3(0, topHeight, 0);
     mesh.vertices.push_back(top);
 
     for (int i = 0; i <= numSegments; i++) {
@@ -27,7 +27,7 @@ ew::MeshData gk::createCylinder(float height, float radius, int numSegments) {
         mesh.indices.push_back(i + 1);
     }
 
-    bottom.pos = ew::Vec3((0, bottomHeight, 0));
+    bottom.pos = ew::Vec3(0, bottomHeight, 0);
     mesh.vertices.push_back(bottom);
 
     for (int i = 0; i <= numSegments; i++) {
@@ -59,7 +59,7 @@ ew::MeshData gk::createCylinder(float height, float radius, int numSegments) {
 
 ew::MeshData gk::createPlane(float width, float height, int subdivisions) {
     ew::MeshData mesh;
-    int indices;
+    int indices, columns = subdivisions + 1;
     for (int row = 0; row <= subdivisions; row++) {
         for (int col = 0; col <= subdivisions; col++) {
             ew::Vertex vertex;
@@ -73,13 +73,13 @@ ew::MeshData gk::createPlane(float width, float height, int subdivisions) {
 
             indices = row * subdivisions + col;
 
+            mesh.indices.push_back(indices);
             mesh.indices.push_back(indices + 1);
-            mesh.indices.push_back(indices + 2);
-            mesh.indices.push_back(indices + 3 + subdivisions);
+            mesh.indices.push_back(indices + columns + 1);
 
-            mesh.indices.push_back(indices + 3 + subdivisions);
-            mesh.indices.push_back(indices + 2 + subdivisions);
-            mesh.indices.push_back(indices + 1);
+            //mesh.indices.push_back(indices + 3 + subdivisions);
+            //mesh.indices.push_back(indices + 2 + subdivisions);
+            //mesh.indices.push_back(indices + 1);
         }
     }
 
