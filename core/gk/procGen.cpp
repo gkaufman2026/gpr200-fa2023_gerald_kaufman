@@ -57,29 +57,36 @@ ew::MeshData gk::createCylinder(float height, float radius, int numSegments) {
     return mesh;
 }
 
-ew::MeshData gk::createPlane(float width, float height, int subdivisions) {
+ew::MeshData gk::createPlane(float size, int subdivisions) {
     ew::MeshData mesh;
-    int indices, columns = subdivisions + 1;
-    for (int row = 0; row <= subdivisions; row++) {
-        for (int col = 0; col <= subdivisions; col++) {
+    int row, col, columns = subdivisions + 1, start;
+
+    for (row = 0; row <= subdivisions; row++) {
+        for (col = 0; col <= subdivisions; col++) {
             ew::Vertex vertex;
-            vertex.pos.x =  width * col / (float)subdivisions;
-            vertex.pos.y = height * row / (float)subdivisions;
 
-            vertex.normal = ew::Vec3(0.0f, 0.0f, -1.0f);
-            vertex.uv = ew::Vec2(width * (float) col / subdivisions), height * ((float) row / subdivisions);
+            vertex.pos.x = size * static_cast<float>(col) / subdivisions;
+            vertex.pos.z = -size * static_cast<float>(row) / subdivisions;
 
+            vertex.uv.x = (static_cast<float>(col) / subdivisions);
+            vertex.uv.y = (static_cast<float>(row) / subdivisions);
+
+            vertex.normal = ew::Vec3(0.0, 1.0, 0.0);
             mesh.vertices.push_back(vertex);
+        }
+    }
+    
+    for (row = 0; row < subdivisions; row++) {
+        for (col = 0; col < subdivisions; col++) {
+            start = row * columns + col;
 
-            indices = row * subdivisions + col;
+            mesh.indices.push_back(start);
+            mesh.indices.push_back(start + 1);
+            mesh.indices.push_back(start + columns + 1);
 
-            mesh.indices.push_back(indices);
-            mesh.indices.push_back(indices + 1);
-            mesh.indices.push_back(indices + columns + 1);
-
-            //mesh.indices.push_back(indices + 3 + subdivisions);
-            //mesh.indices.push_back(indices + 2 + subdivisions);
-            //mesh.indices.push_back(indices + 1);
+            mesh.indices.push_back(start + columns + 1);
+            mesh.indices.push_back(start + columns);
+            mesh.indices.push_back(start);
         }
     }
 
