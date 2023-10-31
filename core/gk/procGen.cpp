@@ -3,8 +3,8 @@
 
 ew::MeshData gk::createSphere(float radius, int numSegments) {
     ew::MeshData mesh;
-    /*float thetaStep = ew::TAU / numSegments, phiStep = ew::PI / numSegments, phi, theta;
-    int row, col, i, poleStart = 0, sideStart = numSegments + 1;
+    float thetaStep = ew::TAU / numSegments, phiStep = ew::PI / numSegments, phi, theta;
+    int row, col, i, poleStart, sideStart;
 
     for (row = 0; row <= numSegments; row++) {
         phi = row * phiStep;
@@ -12,20 +12,16 @@ ew::MeshData gk::createSphere(float radius, int numSegments) {
             theta = col * thetaStep;
             ew::Vertex vertex;
 
-            vertex.pos.x = radius * sin(phi) * sin(theta);
+            vertex.pos.x = radius * cos(theta) * sin(phi);
             vertex.pos.y = radius * cos(phi);
-            vertex.pos.z = radius * sin(phi) * cos(theta);
-
-            vertex.uv.x = static_cast<float>(col) / numSegments;
-            vertex.uv.y = static_cast<float>(row) / numSegments;
-
-            vertex.normal.x = vertex.pos.x;
-            vertex.normal.y = vertex.pos.y;
-            vertex.normal.z = vertex.pos.z;
+            vertex.pos.z = radius * sin(theta) * sin(phi);
 
             mesh.vertices.push_back(vertex);
         }
     }
+
+    poleStart = 0;
+    sideStart = numSegments + 1;
 
     for (i = 0; i < numSegments; i++) {
         mesh.indices.push_back(sideStart + i);
@@ -33,19 +29,28 @@ ew::MeshData gk::createSphere(float radius, int numSegments) {
         mesh.indices.push_back(sideStart + i + 1);
     }
 
-    float columns = sideStart, start;
+    int columns = numSegments + 1, start;
     for (row = 1; row < numSegments - 1; row++) {
-        for (col = 0; row < numSegments; col++) {
+        for (col = 0; col < numSegments; col++) {
             start = row * columns + col;
+
             mesh.indices.push_back(start);
             mesh.indices.push_back(start + 1);
             mesh.indices.push_back(start + columns);
-
             mesh.indices.push_back(start + columns);
             mesh.indices.push_back(start + 1);
             mesh.indices.push_back(start + columns + 1);
         }
-    }*/
+    }
+
+    poleStart = mesh.vertices.size() - numSegments - 1;
+    sideStart = poleStart - numSegments - 1;
+
+    for (i = 0; i < numSegments; i++) {
+        mesh.indices.push_back(sideStart + i);
+        mesh.indices.push_back(sideStart + i + 1);
+        mesh.indices.push_back(poleStart + i);
+    }
 
     return mesh;
 }

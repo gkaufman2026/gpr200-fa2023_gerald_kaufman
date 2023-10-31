@@ -84,7 +84,7 @@ int main() {
 	ew::MeshData cubeMeshData = ew::createCube(0.5f);
 	ew::Mesh cubeMesh(cubeMeshData);
 
-	ew::MeshData sphereMeshData = gk::createSphere(0.5f, 10);
+	ew::MeshData sphereMeshData = gk::createSphere(0.5f, 64);
 	ew::Mesh sphereMesh(sphereMeshData);
 
 	ew::MeshData planeMeshData = gk::createPlane(1.0f, 5);
@@ -97,7 +97,7 @@ int main() {
 	ew::Transform cubeTransform, planeTransform, sphereTransform, cylinderTransform;
 
 	planeTransform.position = ew::Vec3(2.0f, 0.0f, 0.0f);
-	sphereTransform.position = ew::Vec3(1.0f, 0.0f, 0.0f);
+	sphereTransform.position = ew::Vec3(5.0f, 0.0f, 0.0f);
 	cylinderTransform.position = ew::Vec3(-3.0f, 0.0f, 0.0f);
 
 	resetCamera(camera,cameraController);
@@ -138,8 +138,8 @@ int main() {
 		shader.setMat4("_Model", planeTransform.getModelMatrix());
 		planeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
-		//shader.setMat4("_Model", sphereTransform.getModelMatrix());
-		//sphereMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+		shader.setMat4("_Model", sphereTransform.getModelMatrix());
+		sphereMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
 		shader.setMat4("_Model", cylinderTransform.getModelMatrix());
 		cylinderMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
