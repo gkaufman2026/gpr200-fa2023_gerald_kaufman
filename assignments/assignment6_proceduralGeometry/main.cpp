@@ -84,10 +84,10 @@ int main() {
 	ew::MeshData cubeMeshData = ew::createCube(0.5f);
 	ew::Mesh cubeMesh(cubeMeshData);
 
-	//ew::MeshData sphereMeshData = gk::createSphere(0.5f, 64);
-	//ew::Mesh sphereMesh(sphereMeshData);
+	ew::MeshData sphereMeshData = gk::createSphere(0.5f, 10);
+	ew::Mesh sphereMesh(sphereMeshData);
 
-	ew::MeshData planeMeshData = gk::createPlane(1.0f, 5.0);
+	ew::MeshData planeMeshData = gk::createPlane(1.0f, 5);
 	ew::Mesh planeMesh(planeMeshData);
 
 	ew::MeshData cylinderMeshData = gk::createCylinder(2.0f, 1.0f, 8);
@@ -96,8 +96,8 @@ int main() {
 	//Initialize transforms
 	ew::Transform cubeTransform, planeTransform, sphereTransform, cylinderTransform;
 
-	planeTransform.position = ew::Vec3(2.0f, -0.5f, 0.0f);
-	//sphereTransform.position = ew::Vec3(1.0f, 0.0f, 0.0f);
+	planeTransform.position = ew::Vec3(2.0f, 0.0f, 0.0f);
+	sphereTransform.position = ew::Vec3(1.0f, 0.0f, 0.0f);
 	cylinderTransform.position = ew::Vec3(-3.0f, 0.0f, 0.0f);
 
 	resetCamera(camera,cameraController);
