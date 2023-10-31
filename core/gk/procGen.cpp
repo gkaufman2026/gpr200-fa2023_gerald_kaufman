@@ -16,6 +16,11 @@ ew::MeshData gk::createSphere(float radius, int numSegments) {
             vertex.pos.y = radius * cos(phi);
             vertex.pos.z = radius * sin(theta) * sin(phi);
 
+            vertex.normal = ew::Normalize(vertex.pos - ew::Vec3(0, 0, 0));
+
+            vertex.uv.x = theta / ew::TAU;
+            vertex.uv.y = 1 - (phi / ew::PI);
+
             mesh.vertices.push_back(vertex);
         }
     }
@@ -69,6 +74,7 @@ ew::MeshData gk::createCylinder(float height, float radius, int numSegments) {
         topVertex.pos.x = cos(theta) * radius;
         topVertex.pos.z = sin(theta) * radius;
         topVertex.pos.y = topHeight;
+
         mesh.vertices.push_back(topVertex);
 
         mesh.indices.push_back(i);
