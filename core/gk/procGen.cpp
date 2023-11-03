@@ -63,49 +63,86 @@ ew::MeshData gk::createSphere(float radius, int numSegments) {
 ew::MeshData gk::createCylinder(float height, float radius, int numSegments) {
     ew::MeshData mesh;
 
-    float topHeight = height / 2.0f, bottomHeight = -topHeight;
-    ew::Vertex top, bottom;
-    int i;
+    float topHeight = height / 2, bottomHeight = -topHeight;
+    float thetaStep = ew::TAU / numSegments, theta;
+    float start = 1, center = 0, sideStart;
+    int i, columns;
 
-    top.pos = ew::Vec3(0, topHeight, 0);
-    mesh.vertices.push_back(top);
+    mesh.vertices.push_back({ ew::Vec3(0, topHeight, 0), ew::Vec3(0.0, 1.0, 0.0), ew::Vec2(0.5f, 0.5f) });
 
-    bottom.pos = ew::Vec3(0, bottomHeight, 0);
-    mesh.vertices.push_back(bottom);
+    // TOP CAP RING
+    for (i = 0; i <= numSegments; i++) {
+        theta = i * thetaStep;
+        ew::Vertex vertex;
+        vertex.pos = ew::Vec3(cos(theta) * radius, topHeight, sin(theta) * radius);
+        vertex.normal = ew::Vec3(0.0, 1.0, 0.0);
+        vertex.uv = (ew::Vec2(cos(theta), sin(theta)) + 1) / 2;
+        mesh.vertices.push_back(vertex);
+    }
+
+    // TOP SIDE RING
+    for (i = 0; i <= numSegments; i++) {
+        theta = i * thetaStep;
+        ew::Vertex vertex;
+        vertex.pos = ew::Vec3(cos(theta) * radius, topHeight, sin(theta) * radius);
+        vertex.normal = ew::Vec3(cos(theta), 0, sin(theta));
+        vertex.uv = ew::Vec2(i / (float) numSegments, 1);
+        mesh.vertices.push_back(vertex);
+    }
+
+    // BOTTOM SIDE RING
+    for (i = 0; i <= numSegments; i++) {
+        theta = i * thetaStep;
+        ew::Vertex vertex;
+        vertex.pos = ew::Vec3(cos(theta) * radius, bottomHeight, sin(theta) * radius);
+        vertex.normal = ew::Vec3(cos(theta), 0, sin(theta));
+        vertex.uv = ew::Vec2(i / (float) numSegments, 0);
+        mesh.vertices.push_back(vertex);
+    }
+
+    // BOTTOM CAP RING
+    for (i = 0; i <= numSegments; i++) {
+        theta = i * thetaStep;
+        ew::Vertex vertex;
+        vertex.pos = ew::Vec3(cos(theta) * radius, bottomHeight, sin(theta) * radius);
+        vertex.normal = ew::Vec3(0.0, -1.0, 0.0);
+        vertex.uv = ew::Vec2(cos(theta), sin(theta));
+        mesh.vertices.push_back(vertex);
+    }
+
+    mesh.vertices.push_back({ ew::Vec3(0, bottomHeight, 0), ew::Vec3(0.0, 0.0, 0.0) });
+
+    start = 1;
+    center = 0;
+    for (i = 0; i < numSegments; i++) {
+        mesh.indices.push_back(start + i);
+        mesh.indices.push_back(center);
+        mesh.indices.push_back(start + i + 1);
+    }
+
+    sideStart = numSegments + 1;
+    columns = numSegments + 1;
+
+    for (i = 0; i < columns; i++) {
+        start = sideStart + i;
+        mesh.indices.push_back(start);
+        mesh.indices.push_back(start + 1);
+        mesh.indices.push_back(start + columns);
+        mesh.indices.push_back(start + 1);
+        mesh.indices.push_back(start + columns + 1);
+        mesh.indices.push_back(start + columns);
+    }
+
+    center = mesh.vertices.size() - 1;
+    start = center - columns;
+
+    for (i = 0; i < numSegments; i++) {
+        mesh.indices.push_back(start + i + 1);
+        mesh.indices.push_back(center);
+        mesh.indices.push_back(start + i);
+    }
 
     return mesh;
-}
-
-void createCylinderRingTOBFace(ew::MeshData& meshData, ew::Vec3 normal, float yPos, float radius, int segments) {
-    float thetaStep = ew::TAU / segments, theta;
-    int i;
-    for (i = 0; i <= segments; i++) {
-        theta = i * thetaStep;
-        ew::Vertex vertex;
-
-        vertex.pos.x = cos(theta) * radius;
-        vertex.pos.z = sin(theta) * radius;
-        vertex.pos.y = yPos;
-        vertex.normal = normal;
-        vertex.uv = ew::Vec2((cos(theta) + 1) * 0.5, (sin(theta) + 1) * 0.5);
-        meshData.vertices.push_back(vertex);
-    }
-}
-
-void createCylinderRingSideFace(ew::MeshData& meshData, float yPos, float radius, float uv, int segments) {
-    float thetaStep = ew::TAU / segments, theta;
-    int i;
-    for (i = 0; i <= segments; i++) {
-        theta = i * thetaStep;
-        ew::Vertex vertex;
-
-        vertex.pos.x = cos(theta) * radius;
-        vertex.pos.z = sin(theta) * radius;
-        vertex.pos.y = yPos;
-        vertex.normal = ew::Normalize(ew::Vec3(cos(theta), 0, sin(theta)));
-        vertex.uv = ew::Vec2((cos(theta) + 1) * 0.5, uv);
-        meshData.vertices.push_back(vertex);
-    }
 }
 
 ew::MeshData gk::createPlane(float size, int subdivisions) {
