@@ -63,53 +63,49 @@ ew::MeshData gk::createSphere(float radius, int numSegments) {
 ew::MeshData gk::createCylinder(float height, float radius, int numSegments) {
     ew::MeshData mesh;
 
-    float topHeight = height / 2.0f, bottomHeight = -topHeight, thetaStep = ew::TAU / numSegments, theta;
-    ew::Vertex top, bottom, topVertex, bottomVertex;
+    float topHeight = height / 2.0f, bottomHeight = -topHeight;
+    ew::Vertex top, bottom;
+    int i;
 
     top.pos = ew::Vec3(0, topHeight, 0);
     mesh.vertices.push_back(top);
 
-    for (int i = 0; i <= numSegments; i++) {
-        theta = i * thetaStep;
-        topVertex.pos.x = cos(theta) * radius;
-        topVertex.pos.z = sin(theta) * radius;
-        topVertex.pos.y = topHeight;
-
-        mesh.vertices.push_back(topVertex);
-
-        mesh.indices.push_back(i);
-        mesh.indices.push_back(0);
-        mesh.indices.push_back(i + 1);
-    }
-
     bottom.pos = ew::Vec3(0, bottomHeight, 0);
     mesh.vertices.push_back(bottom);
 
-    for (int i = 0; i <= numSegments; i++) {
-        theta = i * thetaStep;
-        bottomVertex.pos.x = cos(theta);
-        bottomVertex.pos.z = sin(theta);
-        bottomVertex.pos.y = bottomHeight;
-        mesh.vertices.push_back(bottomVertex);
-
-        mesh.indices.push_back(numSegments + i + 2);
-        mesh.indices.push_back(numSegments + 2);
-        mesh.indices.push_back(numSegments + i + 3);
-    }
-
-    for (int i = 0; i < numSegments; i++) {
-        int startIndices = i + 1;
-
-        mesh.indices.push_back(startIndices);
-        mesh.indices.push_back(startIndices + 1);
-        mesh.indices.push_back(startIndices + numSegments + 2);
-
-        mesh.indices.push_back(startIndices + 1);
-        mesh.indices.push_back(startIndices + numSegments + 3);
-        mesh.indices.push_back(startIndices + numSegments + 2);
-    }
-
     return mesh;
+}
+
+void createCylinderRingTOBFace(ew::MeshData& meshData, ew::Vec3 normal, float yPos, float radius, int segments) {
+    float thetaStep = ew::TAU / segments, theta;
+    int i;
+    for (i = 0; i <= segments; i++) {
+        theta = i * thetaStep;
+        ew::Vertex vertex;
+
+        vertex.pos.x = cos(theta) * radius;
+        vertex.pos.z = sin(theta) * radius;
+        vertex.pos.y = yPos;
+        vertex.normal = normal;
+        vertex.uv = ew::Vec2((cos(theta) + 1) * 0.5, (sin(theta) + 1) * 0.5);
+        meshData.vertices.push_back(vertex);
+    }
+}
+
+void createCylinderRingSideFace(ew::MeshData& meshData, float yPos, float radius, float uv, int segments) {
+    float thetaStep = ew::TAU / segments, theta;
+    int i;
+    for (i = 0; i <= segments; i++) {
+        theta = i * thetaStep;
+        ew::Vertex vertex;
+
+        vertex.pos.x = cos(theta) * radius;
+        vertex.pos.z = sin(theta) * radius;
+        vertex.pos.y = yPos;
+        vertex.normal = ew::Normalize(ew::Vec3(cos(theta), 0, sin(theta)));
+        vertex.uv = ew::Vec2((cos(theta) + 1) * 0.5, uv);
+        meshData.vertices.push_back(vertex);
+    }
 }
 
 ew::MeshData gk::createPlane(float size, int subdivisions) {
