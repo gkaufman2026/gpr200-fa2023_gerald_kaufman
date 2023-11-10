@@ -18,11 +18,11 @@
 using namespace std;
 
 struct Light {
-	ew::Vec3 position = ew::Vec3(0.0, 0.0, 0.0), color = ew::Vec3(1.0, 1.0, 1.0);
+	ew::Vec3 color = ew::Vec3(1.0, 1.0, 1.0);
 };
 
 struct Material {
-	float ambientK = 0, diffuseK = 0, specular = 0, shininess = 2; 
+	float ambientK = 0.2, diffuseK = 0.5, specular = 0.5, shininess = 2; 
 	ew::Vec3 lightColor = ew::Vec3(1.0f, 1.0f, 1.0f);
 } material;
 
@@ -36,7 +36,7 @@ const int MAX_LIGHTS = 4;
 
 bool doLightsOrbit = true;
 
-float prevTime, orbitRate = 1.0f;
+float prevTime, orbitRadius = 2.0f;
 ew::Vec3 bgColor = ew::Vec3(0.1f);
 
 ew::Camera camera;
@@ -95,6 +95,7 @@ int main() {
 
 	Light lights[MAX_LIGHTS];
 	ew::Transform lightTransform[MAX_LIGHTS];
+	ew::Mesh shapeLightMesh = ew::Mesh(ew::createSphere(0.5f, 16));
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -135,6 +136,7 @@ int main() {
 		}
 
 		shader.setVec3("_LightColor", material.lightColor);
+		shader.setVec3("_CameraPos", camera.position);
 
 		shader.setFloat("_Ambient", material.ambientK);
 		shader.setFloat("_Diffuse", material.diffuseK);
@@ -147,11 +149,18 @@ int main() {
 		unlitShader.setMat4("_ViewProjection", camera.ProjectionMatrix() * camera.ViewMatrix());
 
 		for (int i = 0; i < numOfLights; i++) {
-			lightTransform[i].position = ew::Vec3(cos(i * (ew::TAU / 4) + time) * orbitRate, 1, -sin(i * (ew::TAU / 4) + time) * orbitRate);
-			lightTransform[i].scale = 0.5f;
+			if (doLightsOrbit) {
+				lightTransform[i].position.x = (cos(i * (ew::TAU / 4) + time) * orbitRadius);
+				lightTransform[i].position.y = lightTransform[i].position.y;
+				lightTransform[i].position.z = (- sin(i * (ew::TAU / 4) + time) * orbitRadius);
+			}
+
+			lightTransform[i].scale = 0.35f;
+
 
 			unlitShader.setMat4("_Model", lightTransform[i].getModelMatrix());
 			unlitShader.setVec3("_Color", lights[i].color);
+			shapeLightMesh.draw();
 		}
 
 		//Render UI
@@ -184,12 +193,12 @@ int main() {
 			ImGui::DragInt("Light Count", &numOfLights, 1.0f, 0.0f, MAX_LIGHTS);
 
 			ImGui::Checkbox("Orbitting Lights", &doLightsOrbit);
-			ImGui::DragFloat("Orbit Rate", &orbitRate, 0.1f, 0.5f);
+			ImGui::DragFloat("Orbit Radius", &orbitRadius, 0.1f, 0.5f);
 
 			for (int i = 0; i < numOfLights; i++) {
 				ImGui::PushID(i);
 				if (ImGui::CollapsingHeader("Lights")) {
-					ImGui::DragFloat3("Position", &lights[i].position.x, 0.1f);
+					ImGui::DragFloat3("Position", &lightTransform[i].position.x, 0.1f);
 					ImGui::ColorEdit3("Color", &lights[i].color.x, 0.1f);
 				}
 				ImGui::PopID();
