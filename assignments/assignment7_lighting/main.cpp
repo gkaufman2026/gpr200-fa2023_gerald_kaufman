@@ -195,7 +195,6 @@ int main() {
 				ImGui::PopID();
 			}
 
-
 			if (ImGui::CollapsingHeader("Material")) {
 				ImGui::ColorEdit3("Light Color", &material.lightColor.x);
 				ImGui::DragFloat("Ambient", &material.ambientK, 0.05f, 0.0f, 1.0f);
